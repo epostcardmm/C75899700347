@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy Birthday - Floating Wish Card</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Padauk:wght@400;700&family=Great+Vibes&family=Playfair+Display:ital,wght@0,600;1,400&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: radial-gradient(circle at center, #2e1065, #0f0728, #05020d);
+            overflow: hidden;
+            height: 100vh;
+            touch-action: manipulation;
+        }
+
+        .font-cursive {
+            font-family: 'Great Vibes', cursive;
+        }
+
+        .font-serif-custom {
+            font-family: 'Playfair Display', serif;
+        }
+
+        /* Smooth falling animation stopping right in the center */
+        @keyframes floatDownToCenter {
+            0% {
+                transform: translate(-50%, -100vh) rotate(-12deg);
+                opacity: 0;
+            }
+            20% {
+                opacity: 1;
+            }
+            35% {
+                transform: translate(-35%, -15vh) rotate(8deg);
+            }
+            65% {
+                transform: translate(-60%, 10vh) rotate(-6deg);
+            }
+            85% {
+                transform: translate(-45%, 22vh) rotate(4deg);
+            }
+            100% {
+                transform: translate(-50%, 25vh) rotate(-2deg);
+            }
+        }
+
+        /* Gentle floating/swaying while staying in the screen center */
+        @keyframes centerSwaying {
+            0%, 100% {
+                transform: translate(-50%, 25vh) rotate(-2deg) scale(1);
+            }
+            50% {
+                transform: translate(-50%, 21vh) rotate(2deg) scale(1.03);
+            }
+        }
+
+        /* Pure free image styling - No frame, borders, or shadows */
+        .free-floating-image {
+            position: absolute;
+            top: 25%;
+            left: 50%;
+            animation: floatDownToCenter 6s cubic-bezier(0.25, 1, 0.5, 1) forwards,
+                       centerSwaying 4s ease-in-out infinite 6s;
+            cursor: pointer;
+            transition: filter 0.3s ease;
+            user-select: none;
+            -webkit-user-drag: none;
+        }
+
+        .free-floating-image img {
+            border: none !important;
+            outline: none !important;
+            box-shadow: none !important;
+            background: transparent !important;
+        }
+
+        .free-floating-image:hover img {
+            filter: drop-shadow(0 0 15px rgba(251, 191, 36, 0.7));
+        }
+
+        /* Click prompt badge animation */
+        @keyframes pulseGlow {
+            0%, 100% { opacity: 0.8; transform: scale(0.95); }
+            50% { opacity: 1; transform: scale(1.05); }
+        }
+
+        .click-hint {
+            animation: pulseGlow 1.8s infinite;
+        }
+
+        /* --- RED GINGHAM & VINTAGE PAPER CARD STYLES --- */
+        .gingham-bg {
+            background-color: #f7f3e9;
+            background-image: 
+                linear-gradient(90deg, rgba(185, 28, 28, 0.5) 50%, transparent 50%),
+                linear-gradient(rgba(185, 28, 28, 0.5) 50%, transparent 50%);
+            background-size: 24px 24px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.8);
+        }
+
+        .vintage-note-paper {
+            background: #f4efd8;
+            background-image: 
+                radial-gradient(rgba(0,0,0,0.04) 1px, transparent 0),
+                linear-gradient(to bottom, rgba(0,0,0,0.02) 1px, transparent 1px);
+            background-size: 15px 15px, 100% 24px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
+            transform: rotate(-1.5deg);
+            max-height: 70vh;
+            overflow-y: auto;
+        }
+
+        /* Custom Scrollbar for Vintage Note Paper */
+        .vintage-note-paper::-webkit-scrollbar {
+            width: 6px;
+        }
+        .vintage-note-paper::-webkit-scrollbar-track {
+            background: rgba(180, 160, 120, 0.2);
+            border-radius: 4px;
+        }
+        .vintage-note-paper::-webkit-scrollbar-thumb {
+            background: rgba(136, 19, 19, 0.4);
+            border-radius: 4px;
+        }
+        .vintage-note-paper::-webkit-scrollbar-thumb:hover {
+            background: rgba(136, 19, 19, 0.7);
+        }
+
+        .paperclip {
+            position: absolute;
+            top: 10px;
+            right: 24px;
+            width: 14px;
+            height: 42px;
+            border: 2px solid #55555d;
+            border-radius: 10px;
+            box-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            z-index: 30;
+            pointer-events: none;
+        }
+        .paperclip::after {
+            content: '';
+            position: absolute;
+            top: 6px;
+            left: 2px;
+            width: 6px;
+            height: 26px;
+            border: 2px solid #55555d;
+            border-radius: 6px;
+        }
+
+        /* Small Stamp Photo Style at the bottom right corner */
+        .stamp-photo {
+            background: #fff;
+            padding: 3px;
+            border: 1px dashed #a8a29e;
+            box-shadow: 2px 3px 6px rgba(0,0,0,0.25);
+            transform: rotate(6deg);
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .stamp-photo:hover {
+            transform: rotate(2deg) scale(1.1);
+            box-shadow: 0 8px 15px rgba(0,0,0,0.35);
+        }
+
+        /* Mini CD Disc Styling at Top Left */
+        .mini-cd {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: radial-gradient(circle, #1e293b 18%, #475569 20%, #94a3b8 22%, #cbd5e1 35%, #0f172a 38%, #334155 70%);
+            border: 2px solid #e2e8f0;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            cursor: pointer;
+            transition: transform 0.3s ease;
+            position: absolute;
+            top: 12px;
+            left: 14px;
+            z-index: 30;
+        }
+
+        .mini-cd::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 10px;
+            height: 10px;
+            background: #f4efd8;
+            border-radius: 50%;
+            border: 1px solid #64748b;
+        }
+
+        /* Continuous Rotating Animation for CD */
+        @keyframes spinCD {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .cd-spinning {
+            animation: spinCD 2.5s linear infinite;
+            box-shadow: 0 0 12px rgba(236, 72, 153, 0.8);
+        }
+
+        /* Typing cursor effect */
+        .typing-cursor::after {
+            content: '|';
+            animation: blink 0.7s infinite;
+            color: #991b1b;
+            font-weight: bold;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+
+        /* Background Sparkles Particle Animation */
+        .sparkle {
+            position: absolute;
+            background: radial-gradient(circle, #fff 10%, rgba(255,215,0,0.8) 60%, transparent 100%);
+            border-radius: 50%;
+            pointer-events: none;
+            animation: floatUp var(--duration) linear infinite;
+        }
+
+        @keyframes floatUp {
+            0% {
+                transform: translateY(105vh) scale(0) rotate(0deg);
+                opacity: 0;
+            }
+            20% {
+                opacity: 0.8;
+            }
+            80% {
+                opacity: 0.8;
+            }
+            100% {
+                transform: translateY(-10vh) scale(1.2) rotate(360deg);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body class="relative flex items-center justify-center min-h-screen select-none overflow-hidden">
+
+    <!-- Audio Element (Birthday Song URL) -->
+    <audio id="bgMusic" loop src="https://www.image2url.com/r2/default/audio/1792125807823-b27b1d94-8310-44f6-ae96-e14e34cf9fca.mp3"></audio>
+
+    <!-- Start Screen (Initial Bouquet GIF & Hint) -->
+    <div id="startScreen" class="absolute inset-0 z-40 flex flex-col items-center justify-center cursor-pointer transition-opacity duration-700" onclick="startExperience()">
+        <h1 class="text-amber-200 text-lg md:text-xl font-bold tracking-wide drop-shadow-md mb-6 click-hint text-center px-4">
+            ✨ Click the bouquet ✨
+        </h1>
+        <img src="Https://cdn.pixabay.com/animation/2026/03/15/04/38/04-38-14-772_512.gif" 
+             alt="Bouquet" 
+             class="w-48 sm:w-56 h-auto object-contain hover:scale-105 transition-transform duration-300">
+    </div>
+
+    <!-- Main Content Container (Hidden Initially) -->
+    <div id="mainContent" class="hidden w-full h-full">
+        <!-- Background Floating Sparkles -->
+        <div id="sparkle-container" class="absolute inset-0 pointer-events-none overflow-hidden"></div>
+
+        <!-- Soft Background Ambient Glow -->
+        <div class="absolute w-80 h-80 bg-pink-600/20 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="absolute w-72 h-72 bg-amber-500/20 rounded-full blur-3xl pointer-events-none -top-10 -left-10"></div>
+
+        <!-- Instructions Banner -->
+        <div class="absolute top-8 text-center z-10 px-4 w-full">
+            <h1 class="text-amber-200 text-base md:text-lg font-bold tracking-wide drop-shadow-md">
+                ✨ Tap The Envelope ✨
+            </h1>
+            <p class="text-xs text-purple-300/80 mt-1">Tap the floating photo to open birthday wish</p>
+        </div>
+
+        <!-- Floating Image -->
+        <div id="fallingCard" class="free-floating-image z-20 flex flex-col items-center justify-center" onclick="openWishCard()">
+            <img src="https://user34427.na.imgto.link/public/20260921/1000021860.avif" 
+                 alt="Birthday Special" 
+                 class="w-40 sm:w-48 h-auto object-contain pointer-events-auto rounded-lg"
+                 onerror="this.src='https://i.pinimg.com/1200x/9f/57/51/9f5751b776d9c272fb8feff8058e932a.jpg'">
+            
+            <span class="click-hint mt-3 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-400/90 text-slate-900 font-bold text-xs tracking-wider shadow-lg border border-amber-200">
+                <svg class="w-3.5 h-3.5 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122"></path></svg>
+                Click Me ✨
+            </span>
+        </div>
+    </div>
+
+    <!-- Red Gingham Picnic Background Wish Modal Paper Card -->
+    <div id="wishModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md opacity-0 pointer-events-none transition-opacity duration-500" onclick="closeWishCardOnBg(event)">
+        
+        <!-- Outer Gingham Picnic Card Background -->
+        <div class="gingham-bg relative w-full max-w-md rounded-2xl p-4 sm:p-6 transform scale-90 transition-transform duration-500 overflow-hidden border-2 border-red-200/40" id="modalCard">
+            
+            <!-- Top Left Torn Heart Craft Paper -->
+            <div class="absolute -top-1 -left-2 w-16 h-16 bg-amber-200/80 rounded-full flex items-center justify-center transform -rotate-12 shadow-md border border-amber-300/60 z-20">
+                <span class="text-xl">🤎</span>
+            </div>
+
+            <!-- Inner Vintage Cream Note Paper (With Scroll Support) -->
+            <div class="vintage-note-paper relative p-6 sm:p-7 rounded-md my-2 z-10 border border-stone-300 pb-16">
+                
+                <!-- Top Left Mini Spinning CD Disc -->
+                <div id="cdDisc" class="mini-cd" onclick="toggleMusic(event)" title="Click to play/pause music"></div>
+
+                <!-- Metallic Paperclip Element -->
+                <div class="paperclip"></div>
+
+                <!-- Top Decorative Header -->
+                <div class="text-center mb-4 pt-3">
+                    <span class="text-3xl sm:text-4xl text-amber-900 font-serif-custom block"> Happy Birthday </span>
+                    <div class="w-20 h-0.5 bg-amber-800/40 mx-auto mt-2"></div>
+                </div>
+
+                <!-- Short & Sweet English Birthday Message with Typing Effect -->
+                <div class="space-y-3 text-center leading-relaxed text-stone-800 my-4 min-h-[130px]">
+                    <p id="typeTitle" class="text-lg sm:text-xl font-bold text-rose-800 drop-shadow-sm min-h-[28px]"></p>
+                    
+                    <p id="typeBody1" class="text-sm sm:text-base text-stone-700 font-medium px-2 min-h-[48px]"></p>
+
+                    <p id="typeBody2" class="text-xs sm:text-sm text-stone-600 italic pt-1 min-h-[36px]"></p>
+                </div>
+
+                <!-- Small Stamp Photo at the bottom right corner (Below text) -->
+                <div class="stamp-photo absolute bottom-4 right-4 z-20" onclick="openPhotoModal(event)" title="Click to view full photo">
+                    <img src="https://i.ibb.co/ymCXDLPZ/photo-2026-10-15-19-15-36.jpg" 
+                         alt="Stamp Preview" 
+                         class="w-10 h-12 object-cover rounded-sm"
+                         onerror="this.src='https://i.pinimg.com/1200x/9f/57/51/9f5751b776d9c272fb8feff8058e932a.jpg'">
+                </div>
+
+                <!-- Decorative Footer -->
+                <div id="cardFooter" class="mt-4 pt-3 border-t border-amber-900/10 flex flex-col items-center text-xs text-stone-600 opacity-0 transition-opacity duration-500 pr-14">
+                    <span class="font-cursive text-base text-amber-900 mb-1">With All My Love ❤️</span>
+                    <span class="mb-2 text-center">🎂💗I LOVE YOU, MY WIFE. 🧸🎀🤍</span>
+                    
+                    <!-- Playing Music Status Badge -->
+                    <div id="musicStatus" class="hidden flex items-center gap-1.5 px-3 py-1 bg-rose-100/90 text-rose-800 rounded-full text-xs font-semibold border border-rose-200 shadow-sm mt-1">
+                        <span class="inline-block w-2 h-2 rounded-full bg-rose-500 animate-ping"></span>
+                        <span>playing music 🎵</span>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Bottom Right Torn Heart Craft Paper -->
+            <div class="absolute -bottom-2 -right-2 w-16 h-16 bg-amber-200/80 rounded-full flex items-center justify-center transform rotate-12 shadow-md border border-amber-300/60 z-20">
+                <span class="text-xl">🤎</span>
+            </div>
+
+            <!-- Close Button -->
+            <button onclick="closeWishCard()" class="absolute top-2 right-2 z-30 bg-rose-600 text-white rounded-full p-1.5 shadow-lg hover:bg-rose-700 transition-colors focus:outline-none">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            </button>
+        </div>
+    </div>
+
+    <!-- Full Photo Modal Container -->
+    <div id="photoModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90 backdrop-blur-lg opacity-0 pointer-events-none transition-opacity duration-300" onclick="closePhotoModal()">
+        <div class="relative max-w-sm sm:max-w-md w-full bg-white p-3 rounded-xl shadow-2xl transform scale-95 transition-transform duration-300" onclick="event.stopPropagation()">
+            <img src="https://i.ibb.co/ymCXDLPZ/photo-2026-10-15-19-15-36.jpg" 
+                 alt="Full Photo" 
+                 class="w-full h-auto rounded-lg max-h-[80vh] object-contain mx-auto"
+                 onerror="this.src='https://i.pinimg.com/1200x/9f/57/51/9f5751b776d9c272fb8feff8058e932a.jpg'">
+            
+            <button onclick="closePhotoModal()" class="absolute -top-3 -right-3 bg-rose-600 text-white rounded-full p-2 shadow-lg hover:bg-rose-700 transition-colors focus:outline-none">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        const titleText = "🎂🤍 Happy Birthday ပါ မောင့်ကလေး''ရေ 🥺💗";
+        const body1Text = "မောင့်ကလေး''ရေ မွေးနေ့ကစပြီး နေ့ရက်တိုင်း ပျော်ရွှင်ပါစေနော်။ ကလေးလေးလိုချင်တဲ့ ဆန္ဒလေးတွေလည်း အကုန်ပြည့်ပါစေ။ 🥺❤️‍🩹 မောင်တိုနှစ်ယောက် ချစ်လာခဲ့တာ 1 Year 10 Months ကျော်ခဲ့ပြီနော်။ အရင်လိုမဟုတ်တော့တဲ့ အချိန်တွေမှာ မောင်လည်း အရင်က ပျော်ခဲ့ရတဲ့နေ့လေးတွေကို လွမ်းမိတယ်။ မောင့်ကြောင့် ကလေးလေး စိတ်ညစ်ခဲ့ရတာတွေ၊ ဝမ်းနည်းခဲ့ရတာတွေ ရှိခဲ့ရင် မောင်တကယ်တောင်းပန်ပါတယ်နော်။ 🥺💗မောင်က အရာအားလုံးကို အရင်လိုပြန်ဖြစ်စေချင်တယ်။ အရင်လို စကားတွေပြောပြီး အတူတူရယ်မောပျော်ရွှင်ချင်တယ်။ မောင်တိုနှစ်ယောက်ကြားမှာ ဘာတွေပဲဖြစ်ခဲ့ဖြစ်ခဲ့ မောင်ကတော့ ကလေးလေးကို ချစ်နေတုန်းပါပဲ။ မောင်တိုနှစ်ယောက် ပြန်အဆင်ပြေပြီး အရင်လိုနီးစပ်နိုင်ဖို မောင်မျှော်လင့်နေမိတုန်းပါနော်။ 🥺❤️‍🩹";
+        const body2Text = "မောင့်ကလေး''ရေ မောင်မှားခဲ့တာတွေရှိရင် ခွင့်လွှတ်ပေးပါနော်။ မောင်က စကားနဲ့ပဲမဟုတ်ဘဲ အပြုအမူနဲ့ပါ ပြောင်းလဲပြချင်တယ်။ မောင်တိုရဲ့အမှတ်တရလေးတွေကို မောင်မမေ့ပါဘူး။ မောင့်အနာဂတ်မှာလည်း ကလေး''နဲ့အတူ ပျော်ရွှင်စရာနေ့ရက်လေးတွေ ဖြတ်သန်းချင်ပါသေးတယ်။ 🥺💗 Happy Birthday ပါ မောင့်ကလေး''ရေ။ မောင်မင်းကို အရမ်းချစ်တယ်နော်။ ";
+
+        let isTyping = false;
+        let typingTimeout;
+        let isPlaying = false;
+
+        function startExperience() {
+            const startScreen = document.getElementById('startScreen');
+            const mainContent = document.getElementById('mainContent');
+
+            startScreen.classList.add('opacity-0');
+            setTimeout(() => {
+                startScreen.style.display = 'none';
+                mainContent.classList.remove('hidden');
+                createSparkles();
+            }, 700);
+        }
+
+        function createSparkles() {
+            const container = document.getElementById('sparkle-container');
+            if (!container) return;
+            const sparkleCount = 35;
+
+            for (let i = 0; i < sparkleCount; i++) {
+                const sparkle = document.createElement('div');
+                sparkle.classList.add('sparkle');
+                
+                const size = Math.random() * 6 + 3;
+                const left = Math.random() * 100;
+                const duration = Math.random() * 6 + 6;
+                const delay = Math.random() * 5;
+
+                sparkle.style.width = `${size}px`;
+                sparkle.style.height = `${size}px`;
+                sparkle.style.left = `${left}%`;
+                sparkle.style.setProperty('--duration', `${duration}s`);
+                sparkle.style.animationDelay = `${delay}s`;
+
+                container.appendChild(sparkle);
+            }
+        }
+
+        function openWishCard() {
+            const modal = document.getElementById('wishModal');
+            const modalCard = document.getElementById('modalCard');
+
+            modal.classList.remove('opacity-0', 'pointer-events-none');
+            modal.classList.add('opacity-100', 'pointer-events-auto');
+            
+            modalCard.classList.remove('scale-90');
+            modalCard.classList.add('scale-100');
+
+            // Reset text elements
+            document.getElementById('typeTitle').textContent = '';
+            document.getElementById('typeBody1').textContent = '';
+            document.getElementById('typeBody2').textContent = '';
+            document.getElementById('cardFooter').classList.add('opacity-0');
+
+            // Start Typewriter Animation
+            setTimeout(startTypingEffect, 300);
+        }
+
+        function startTypingEffect() {
+            isTyping = true;
+            typeSentence('typeTitle', titleText, 40, () => {
+                typeSentence('typeBody1', body1Text, 30, () => {
+                    typeSentence('typeBody2', body2Text, 30, () => {
+                        document.getElementById('cardFooter').classList.remove('opacity-0');
+                        isTyping = false;
+                    });
+                });
+            });
+        }
+
+        function typeSentence(elementId, text, speed, callback) {
+            const el = document.getElementById(elementId);
+            el.classList.add('typing-cursor');
+            let i = 0;
+
+            function typeChar() {
+                if (i < text.length) {
+                    el.textContent += text.charAt(i);
+                    i++;
+                    
+                    // Auto scroll to bottom while typing long text
+                    const paper = document.querySelector('.vintage-note-paper');
+                    if (paper) paper.scrollTop = paper.scrollHeight;
+
+                    typingTimeout = setTimeout(typeChar, speed);
+                } else {
+                    el.classList.remove('typing-cursor');
+                    if (callback) callback();
+                }
+            }
+            typeChar();
+        }
+
+        function closeWishCard() {
+            const modal = document.getElementById('wishModal');
+            const modalCard = document.getElementById('modalCard');
+
+            clearTimeout(typingTimeout);
+
+            modal.classList.remove('opacity-100', 'pointer-events-auto');
+            modal.classList.add('opacity-0', 'pointer-events-none');
+
+            modalCard.classList.remove('scale-100');
+            modalCard.classList.add('scale-90');
+        }
+
+        function closeWishCardOnBg(event) {
+            if (event.target.id === 'wishModal') {
+                closeWishCard();
+            }
+        }
+
+        /* CD & Music Functions */
+        function toggleMusic(event) {
+            event.stopPropagation();
+            const audio = document.getElementById('bgMusic');
+            const cd = document.getElementById('cdDisc');
+            const musicStatus = document.getElementById('musicStatus');
+
+            if (isPlaying) {
+                audio.pause();
+                cd.classList.remove('cd-spinning');
+                musicStatus.classList.add('hidden');
+                isPlaying = false;
+            } else {
+                audio.play().then(() => {
+                    cd.classList.add('cd-spinning');
+                    musicStatus.classList.remove('hidden');
+                    isPlaying = true;
+                }).catch(err => console.log("Audio autoplay prevented", err));
+            }
+        }
+
+        /* Full Photo Modal Functions */
+        function openPhotoModal(event) {
+            event.stopPropagation();
+            const photoModal = document.getElementById('photoModal');
+            photoModal.classList.remove('opacity-0', 'pointer-events-none');
+            photoModal.classList.add('opacity-100', 'pointer-events-auto');
+        }
+
+        function closePhotoModal() {
+            const photoModal = document.getElementById('photoModal');
+            photoModal.classList.remove('opacity-100', 'pointer-events-auto');
+            photoModal.classList.add('opacity-0', 'pointer-events-none');
+        }
+    </script>
+</body>
+</html>
